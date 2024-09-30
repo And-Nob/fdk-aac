@@ -109,6 +109,9 @@ amm-info@iis.fraunhofer.de
 #if defined(__arm__)
 #include "arm/clz_arm.h"
 
+#elif defined(__riscv)
+#include "riscv/clz_riscv.h"
+
 #elif defined(__mips__)
 #include "mips/clz_mips.h"
 

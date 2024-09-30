@@ -108,6 +108,9 @@ amm-info@iis.fraunhofer.de
 #if defined(__arm__)
 #include "arm/scramble_arm.h"
 
+//#elif defined(__riscv)
+//#include "riscv/scramble_riscv.h"
+
 #elif defined(__mips__) && defined(__mips_dsp) && !defined(__mips16)
 #include "mips/scramble_mips.h"
 
@@ -147,6 +150,7 @@ inline void scramble(FIXP_DBL *x, INT length) {
       x[2 * j + 1] = tmp;
     }
   }
+
 }
 #endif /* !defined(FUNCTION_scramble) */
 

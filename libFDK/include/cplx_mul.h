@@ -111,6 +111,9 @@ amm-info@iis.fraunhofer.de
 #elif defined(__GNUC__) && defined(__mips__) && __mips_isa_rev < 6
 #include "mips/cplx_mul_mips.h"
 
+//#elif defined(__riscv)
+//#include "riscv/cplx_mul_riscv.h"
+
 #endif /* #if defined all cores: bfin, arm, etc. */
 
 /* #############################################################################

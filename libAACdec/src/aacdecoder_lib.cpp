@@ -1,3 +1,5 @@
+#include "iob-timer.h"
+
 /* -----------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
@@ -1151,7 +1153,8 @@ static INT aacDecoder_EstimateNumberOfLostFrames(HANDLE_AACDECODER self) {
 LINKSPEC_CPP AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
                                                       INT_PCM *pTimeData,
                                                       const INT timeDataSize,
-                                                      const UINT flags) {
+                                                      const UINT flags,
+                                                      UINT *elapsed_time) {
   AAC_DECODER_ERROR ErrorStatus;
   INT layer;
   INT nBits;
@@ -1205,6 +1208,7 @@ LINKSPEC_CPP AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
         (self->buildUpStatus == AACDEC_RSV60_BUILD_UP_IDLE_IN_BAND))) {
     TRANSPORTDEC_ERROR err;
 
+    //elapsed_time[0]=timer_time_tu(1000);
     for (layer = 0; layer < self->nrOfLayers; layer++) {
       err = transportDec_ReadAccessUnit(self->hInput, layer);
       if (err != TRANSPORTDEC_OK) {
@@ -1232,6 +1236,7 @@ LINKSPEC_CPP AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
         }
       }
     }
+    //elapsed_time[0]=timer_time_tu(1000)-elapsed_time[0];
   } else {
     if (self->streamInfo.numLostAccessUnits > 0) {
       self->streamInfo.numLostAccessUnits--;
@@ -1249,6 +1254,7 @@ LINKSPEC_CPP AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
   HANDLE_FDK_BITSTREAM hBsAu;
 
   /* Process preroll frames and current frame */
+  //elapsed_time[1]=timer_time_tu(1000);
   do {
     if (!(flags & (AACDEC_CONCEAL | AACDEC_FLUSH)) &&
         (self->flushStatus != AACDEC_RSV60_CFG_CHANGE_ATSC_FLUSH_ON) &&
@@ -1906,6 +1912,7 @@ LINKSPEC_CPP AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
   } while ((accessUnit < numAccessUnits) ||
            ((self->flushStatus == AACDEC_USAC_DASH_IPF_FLUSH_ON) &&
             !(flags & AACDEC_CONCEAL)));
+  //elapsed_time[1]=timer_time_tu(1000)-elapsed_time[1];
 
   if (self->streamInfo.extAot != AOT_AAC_SLS) {
     pcmLimiterScale += PCM_OUT_HEADROOM;
@@ -1999,12 +2006,15 @@ LINKSPEC_CPP AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
       not) */
       if ((self->streamInfo.numChannels == 1) || (self->sbrEnabled) ||
           (self->mpsEnableCurr)) {
+        //elapsed_time[2]=timer_time_tu(1000);
         scaleValuesSaturate(
             pTimeData, pTimeData2,
             self->streamInfo.frameSize * self->streamInfo.numChannels,
             pcmLimiterScale);
+        //elapsed_time[2]=timer_time_tu(1000)-elapsed_time[2];
 
       } else {
+        //elapsed_time[2]=timer_time_tu(1000);
         scaleValuesSaturate(
             (INT_PCM *)self->workBufferCore2, pTimeData2,
             self->streamInfo.frameSize * self->streamInfo.numChannels,
@@ -2013,6 +2023,7 @@ LINKSPEC_CPP AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
         FDK_interleave((INT_PCM *)self->workBufferCore2, pTimeData,
                        self->streamInfo.numChannels, self->streamInfo.frameSize,
                        self->streamInfo.frameSize);
+        //elapsed_time[2]=timer_time_tu(1000)-elapsed_time[2];
       }
     }
   } /* if (self->streamInfo.extAot != AOT_AAC_SLS)*/

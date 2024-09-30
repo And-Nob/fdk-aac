@@ -1049,7 +1049,8 @@ LINKSPEC_H AAC_DECODER_ERROR aacDecoder_Fill(HANDLE_AACDECODER self,
 LINKSPEC_H AAC_DECODER_ERROR aacDecoder_DecodeFrame(HANDLE_AACDECODER self,
                                                     INT_PCM *pTimeData,
                                                     const INT timeDataSize,
-                                                    const UINT flags);
+                                                    const UINT flags,
+                                                    UINT *elapsed_time);
 
 /**
  * \brief       De-allocate all resources of an AAC decoder instance.

@@ -110,6 +110,9 @@ amm-info@iis.fraunhofer.de
 #if defined(__arm__)
 #include "arm/fixmadd_arm.h"
 
+//#elif defined(__riscv)
+//#include "riscv/fixmadd_riscv.h"
+
 #endif /* all cores */
 
 /*************************************************************************
